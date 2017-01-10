@@ -88,4 +88,11 @@ typedef void(^ReturnBlock)(BOOL isOpen);
  */
 + (void)openHealthServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(8_0);
 
+/**
+ 是否开启Touch ID服务 要求iOS8以上
+ 
+ @param returnBolck 返回YES:开启,返回NO:关闭
+ */
++ (void)openTouchIDServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(8_0);
+
 @end

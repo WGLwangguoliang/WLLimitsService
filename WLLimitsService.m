@@ -25,6 +25,9 @@
 #import <CoreTelephony/CTCellularData.h>
 // 健康
 #import <HealthKit/HealthKit.h>
+// Touch ID
+#import <LocalAuthentication/LocalAuthentication.h>
+
 @implementation WLLimitsService
 
 #pragma mark - 开启定位服务
@@ -276,6 +279,55 @@
             if (returnBolck) {
                 returnBolck(YES);
             }
+        }
+    }
+#endif
+}
+
+#pragma mark - 开启Touch ID服务
++ (void)openTouchIDServiceWithBolck:(ReturnBlock)returnBolck
+{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
+    LAContext *laContext = [[LAContext alloc] init];
+    laContext.localizedFallbackTitle = @"输入密码";
+    NSError *error;
+    if ([laContext canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics error:&error]) {
+        NSLog(@"恭喜,Touch ID可以使用!");
+        [laContext evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"需要验证您的指纹来确认您的身份信息" reply:^(BOOL success, NSError *error) {
+            if (success) {
+                // 识别成功
+                if (returnBolck) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        returnBolck(YES);
+                    }];
+                }
+            } else if (error) {
+                if (returnBolck) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                        returnBolck(NO);
+                    }];
+                }
+                if (error.code == LAErrorAuthenticationFailed) {
+                    // 验证失败
+                }
+                if (error.code == LAErrorUserCancel) {
+                    // 用户取消
+                }
+                if (error.code == LAErrorUserFallback) {
+                    // 用户选择输入密码
+                }
+                if (error.code == LAErrorSystemCancel) {
+                    // 系统取消
+                }
+                if (error.code == LAErrorPasscodeNotSet) {
+                    // 密码没有设置
+                }
+            }
+        }];
+    } else {
+        NSLog(@"设备不支持Touch ID功能,原因:%@",error);
+        if (returnBolck) {
+            returnBolck(NO);
         }
     }
 #endif
