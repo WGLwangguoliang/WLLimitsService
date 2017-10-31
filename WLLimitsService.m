@@ -27,67 +27,71 @@
 #import <HealthKit/HealthKit.h>
 // Touch ID
 #import <LocalAuthentication/LocalAuthentication.h>
+// Apple Pay
+#import <PassKit/PassKit.h>
+
+#import <s>
 
 @implementation WLLimitsService
 
 #pragma mark - 开启定位服务
-+ (void)isOpenLocationServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openLocationServiceWithBlock:(ReturnBlock)returnBlock
 {
     BOOL isOpen = NO;
     if ([CLLocationManager locationServicesEnabled] && [CLLocationManager authorizationStatus] != kCLAuthorizationStatusDenied) {
         isOpen = YES;
     }
-    if (returnBolck) {
-        returnBolck(isOpen);
+    if (returnBlock) {
+        returnBlock(isOpen);
     }
 }
 
 #pragma mark - 开启消息推送服务
-+ (void)isOpenMessageNotificationServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openMessageNotificationServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
     [[UNUserNotificationCenter currentNotificationCenter] getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings *settings) {
-        if (returnBolck) {
-            returnBolck(settings.authorizationStatus == UNAuthorizationStatusAuthorized);
+        if (returnBlock) {
+            returnBlock(settings.authorizationStatus == UNAuthorizationStatusAuthorized);
         }
     }];
 #elif __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
-    if (returnBolck) {
-        returnBolck([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]);
+    if (returnBlock) {
+        returnBlock([[UIApplication sharedApplication] isRegisteredForRemoteNotifications]);
     }
 #else
     UIRemoteNotificationType type = [[UIApplication sharedApplication] enabledRemoteNotificationTypes];
-    if (returnBolck) {
-        returnBolck(type != UIRemoteNotificationTypeNone);
+    if (returnBlock) {
+        returnBlock(type != UIRemoteNotificationTypeNone);
     }
 #endif
 }
 
 #pragma mark - 开启摄像头服务
-+ (void)isOpenCaptureDeviceServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openCaptureDeviceServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
     AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (authStatus == AVAuthorizationStatusNotDetermined) {
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-            if (returnBolck) {
-                returnBolck(granted);
+            if (returnBlock) {
+                returnBlock(granted);
             }
         }];
     } else if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #endif
 }
 
 #pragma mark - 开启相册服务
-+ (void)isOpenAlbumServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openAlbumServiceWithBlock:(ReturnBlock)returnBlock
 {
     BOOL isOpen;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
@@ -103,53 +107,53 @@
         isOpen = NO;
     }
 #endif
-    if (returnBolck) {
-        returnBolck(isOpen);
+    if (returnBlock) {
+        returnBlock(isOpen);
     }
 }
 
 #pragma mark - 开启麦克风服务
-+ (void)isOpenRecordServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openRecordServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
     AVAudioSessionRecordPermission permissionStatus = [[AVAudioSession sharedInstance] recordPermission];
     if (permissionStatus == AVAudioSessionRecordPermissionUndetermined) {
         [[AVAudioSession sharedInstance] requestRecordPermission:^(BOOL granted) {
-            if (returnBolck) {
-                returnBolck(granted);
+            if (returnBlock) {
+                returnBlock(granted);
             }
         }];
     } else if (permissionStatus == AVAudioSessionRecordPermissionDenied) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #endif
 }
 
 #pragma mark - 开启通讯录服务
-+ (void)isOpenContactsServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openContactsServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
     CNAuthorizationStatus cnAuthStatus = [CNContactStore authorizationStatusForEntityType:CNEntityTypeContacts];
     if (cnAuthStatus == CNAuthorizationStatusNotDetermined) {
         CNContactStore *store = [[CNContactStore alloc] init];
         [store requestAccessForEntityType:CNEntityTypeContacts completionHandler:^(BOOL granted, NSError *error) {
-            if (returnBolck) {
-                returnBolck(granted);
+            if (returnBlock) {
+                returnBlock(granted);
             }
         }];
     } else if (cnAuthStatus == CNAuthorizationStatusRestricted || cnAuthStatus == CNAuthorizationStatusDenied) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #else
@@ -161,26 +165,26 @@
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (error) {
                     NSLog(@"Error: %@", (__bridge NSError *)error);
-                    if (returnBolck) {
-                        returnBolck(NO);
+                    if (returnBlock) {
+                        returnBlock(NO);
                     }
                 } else {
-                    if (returnBolck) {
-                        returnBolck(YES);
+                    if (returnBlock) {
+                        returnBlock(YES);
                     }
                 }
             });
         });
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #endif
 }
 
 #pragma mark - 开启蓝牙服务
-+ (void)openPeripheralServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openPeripheralServiceWithBlock:(ReturnBlock)returnBlock
 {
     BOOL isOpen = YES;
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
@@ -190,14 +194,14 @@
     } else if (cbAuthStatus == CBPeripheralManagerAuthorizationStatusRestricted || cbAuthStatus == CBPeripheralManagerAuthorizationStatusDenied) {
         isOpen = NO;
     }
-    if (returnBolck) {
-        returnBolck(isOpen);
+    if (returnBlock) {
+        returnBlock(isOpen);
     }
 #endif
 }
 
 #pragma mark - 开启日历/备忘服务
-+ (void)openEventServiceWithBolck:(ReturnBlock)returnBolck withType:(EKEntityType)entityType
++ (void)openEventServiceWithBlock:(ReturnBlock)returnBlock withType:(EKEntityType)entityType
 {
     // EKEntityTypeEvent    代表日历
     // EKEntityTypeReminder 代表备忘
@@ -205,57 +209,57 @@
     if (ekAuthStatus == EKAuthorizationStatusNotDetermined) {
         EKEventStore *store = [[EKEventStore alloc] init];
         [store requestAccessToEntityType:entityType completion:^(BOOL granted, NSError *error) {
-            if (returnBolck) {
-                returnBolck(granted);
+            if (returnBlock) {
+                returnBlock(granted);
             }
         }];
     } else if (ekAuthStatus == EKAuthorizationStatusRestricted || ekAuthStatus == EKAuthorizationStatusDenied) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 }
 
 #pragma mark - 开启联网服务
-+ (void)openEventServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openEventServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
     CTCellularData *cellularData = [[CTCellularData alloc] init];
     cellularData.cellularDataRestrictionDidUpdateNotifier = ^(CTCellularDataRestrictedState state){
         if (state == kCTCellularDataRestrictedStateUnknown || state == kCTCellularDataNotRestricted) {
-            if (returnBolck) {
-                returnBolck(NO);
+            if (returnBlock) {
+                returnBlock(NO);
             }
         } else {
-            if (returnBolck) {
-                returnBolck(YES);
+            if (returnBlock) {
+                returnBlock(YES);
             }
         }
     };
     CTCellularDataRestrictedState state = cellularData.restrictedState;
     if (state == kCTCellularDataRestrictedStateUnknown || state == kCTCellularDataNotRestricted) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #endif
 }
 
 #pragma mark - 开启健康服务
-+ (void)openHealthServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openHealthServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
     if (![HKHealthStore isHealthDataAvailable]) {
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
         HKHealthStore *healthStore = [[HKHealthStore alloc] init];
@@ -267,17 +271,17 @@
             // 2. 你创建了另一个NSSet对象，里面有你需要向Store写入的信息的所有类型（锻炼与健身的信息、BMI、能量消耗、运动距离）
             NSSet <HKSampleType *> * healthKitTypesToWrite = [[NSSet alloc] initWithArray:@[[HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierBodyMassIndex],[HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierActiveEnergyBurned],[HKObjectType quantityTypeForIdentifier:HKQuantityTypeIdentifierDistanceWalkingRunning],[HKObjectType workoutType]]];
             [healthStore requestAuthorizationToShareTypes:healthKitTypesToWrite readTypes:healthKitTypesToRead completion:^(BOOL success, NSError *error) {
-                if (returnBolck) {
-                    returnBolck(success);
+                if (returnBlock) {
+                    returnBlock(success);
                 }
             }];
         } else if (hkAuthStatus == HKAuthorizationStatusSharingDenied) {
-            if (returnBolck) {
-                returnBolck(NO);
+            if (returnBlock) {
+                returnBlock(NO);
             }
         } else {
-            if (returnBolck) {
-                returnBolck(YES);
+            if (returnBlock) {
+                returnBlock(YES);
             }
         }
     }
@@ -285,7 +289,7 @@
 }
 
 #pragma mark - 开启Touch ID服务
-+ (void)openTouchIDServiceWithBolck:(ReturnBlock)returnBolck
++ (void)openTouchIDServiceWithBlock:(ReturnBlock)returnBlock
 {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_8_0
     LAContext *laContext = [[LAContext alloc] init];
@@ -296,15 +300,15 @@
         [laContext evaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics localizedReason:@"需要验证您的指纹来确认您的身份信息" reply:^(BOOL success, NSError *error) {
             if (success) {
                 // 识别成功
-                if (returnBolck) {
+                if (returnBlock) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        returnBolck(YES);
+                        returnBlock(YES);
                     }];
                 }
             } else if (error) {
-                if (returnBolck) {
+                if (returnBlock) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                        returnBolck(NO);
+                        returnBlock(NO);
                     }];
                 }
                 if (error.code == LAErrorAuthenticationFailed) {
@@ -326,8 +330,25 @@
         }];
     } else {
         NSLog(@"设备不支持Touch ID功能,原因:%@",error);
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
+        }
+    }
+#endif
+}
+
+#pragma mark - 开启Apple Pay服务
++ (void)openApplePayServiceWithBlock:(ReturnBlock)returnBlock
+{
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_9_0
+    NSArray<PKPaymentNetwork> *supportedNetworks = @[PKPaymentNetworkAmex, PKPaymentNetworkMasterCard, PKPaymentNetworkVisa, PKPaymentNetworkDiscover];
+    if ([PKPaymentAuthorizationViewController canMakePayments] && [PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:supportedNetworks]) {
+        if (returnBlock) {
+            returnBlock(YES);
+        }
+    } else {
+        if (returnBlock) {
+            returnBlock(NO);
         }
     }
 #endif
@@ -335,12 +356,12 @@
 
 #pragma mark - 手机是否静音服务
 /*
-+ (void)openWithBolck:(ReturnBlock)returnBolck
++ (void)openWithBlock:(ReturnBlock)returnBlock
 {
     // 返回YES 就是静音
 #if TARGET_IPHONE_SIMULATOR
-    if (returnBolck) {
-        returnBolck(YES);
+    if (returnBlock) {
+        returnBlock(YES);
     }
 #else
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_5_0
@@ -373,12 +394,12 @@
     AudioSessionInitialize(NULL, NULL, NULL, NULL);
     AudioSessionGetProperty(kAudioSessionProperty_AudioRoute, &propertySize, &state);
     if(CFStringGetLength(state) > 0) { // 有声音
-        if (returnBolck) {
-            returnBolck(NO);
+        if (returnBlock) {
+            returnBlock(NO);
         }
     } else {
-        if (returnBolck) {
-            returnBolck(YES);
+        if (returnBlock) {
+            returnBlock(YES);
         }
     }
 #endif

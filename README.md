@@ -9,32 +9,32 @@ ___
 ### 1.定位服务
 <br/>
 a.需要导入 `#import <CoreLocation/CoreLocation.h>`<br/>
-b.代码方法 `+ (void)isOpenLocationServiceWithBolck:(ReturnBlock)returnBolck;`
+b.代码方法 `+ (void)openLocationServiceWithBolck:(ReturnBlock)returnBolck;`
 
 ### 2.推送消息服务
 <br/>
 a.需要导入 `#import <UserNotifications/UserNotifications.h>`<br/>
-b.代码方法 `+ (void)isOpenMessageNotificationServiceWithBolck:(ReturnBlock)returnBolck;`
+b.代码方法 `+ (void)openMessageNotificationServiceWithBolck:(ReturnBlock)returnBolck;`
 
 ### 3.摄像头服务(iOS7以上)
 <br/>
 a.需要导入 `#import <AVFoundation/AVFoundation.h>`<br/>
-b.代码方法 `+ (void)isOpenCaptureDeviceServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(7_0);`
+b.代码方法 `+ (void)openCaptureDeviceServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(7_0);`
 
 ### 4.相册服务
 <br/>
 a.需要导入 `#import <Photos/Photos.h>#import <AssetsLibrary/AssetsLibrary.h>`<br/>
-b.代码方法 `+ (void)isOpenAlbumServiceWithBolck:(ReturnBlock)returnBolck;`
+b.代码方法 `+ (void)openAlbumServiceWithBolck:(ReturnBlock)returnBolck;`
 
 ### 5.麦克风服务(iOS8以上)
 <br/>
 a.需要导入 `#import <AVFoundation/AVFoundation.h>`<br/>
-b.代码方法 `+ (void)isOpenRecordServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(8_0);`
+b.代码方法 `+ (void)openRecordServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(8_0);`
 
 ### 6.通讯录服务
 <br/>
 a.需要导入 `#import <AddressBook/AddressBook.h>#import <Contacts/Contacts.h>`<br/>
-b.代码方法 `+ (void)isOpenContactsServiceWithBolck:(ReturnBlock)returnBolck;`
+b.代码方法 `+ (void)openContactsServiceWithBolck:(ReturnBlock)returnBolck;`
 
 ### 7.蓝牙服务(iOS7以上)
 <br/>
@@ -61,6 +61,20 @@ b.代码方法 `+ (void)openHealthServiceWithBolck:(ReturnBlock)returnBolck NS_A
 a.需要导入 `#import <LocalAuthentication/LocalAuthentication.h>`<br/>
 b.代码方法 `+ (void)openTouchIDServiceWithBolck:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(8_0);`
 
+### 12.Apple Pay服务(iOS9以上)
+<br/>
+a.需要导入 `#import <PassKit/PassKit.h>`<br/>
+b.代码方法 `+ (void)openApplePayServiceWithBlock:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(9_0);`
+
+### 13.语音识别服务(iOS10以上)
+<br/>
+a.需要导入 `#import <Speech/Speech.h>`<br/>
+b.代码方法 `+ (void)openSpeechServiceWithBlock:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(10_0);`
+
+### 14.Siri服务(iOS10以上)
+<br/>
+a.需要导入 `#import <Speech/Speech.h>`<br/>
+b.代码方法 `+ (void)openSpeechServiceWithBlock:(ReturnBlock)returnBolck NS_AVAILABLE_IOS(10_0);`
 ## 二.安装
 ___
 1.直接下载工程(有一个.h和.m文件),直接导入就可以了<br/>
@@ -91,7 +105,8 @@ ___
 <key>NSRemindersUsageDescription</key> 
 <string>App需要您的同意,才能访问提醒事项</string> 
 <!-- 运动与健身 --> 
-<key>NSMotionUsageDescription</key> <string>App需要您的同意,才能访问运动与健身</string> 
+<key>NSMotionUsageDescription</key>
+ <string>App需要您的同意,才能访问运动与健身</string> 
 <!-- 健康更新 --> 
 <key>NSHealthUpdateUsageDescription</key> 
 <string>App需要您的同意,才能访问健康更新 </string> 
@@ -104,4 +119,7 @@ ___
 <!-- 媒体资料库 --> 
 <key>NSAppleMusicUsageDescription</key> 
 <string>App需要您的同意,才能访问媒体资料库</string>
+<!-- 语音识别 --> 
+<key>NSSpeechRecognitionUsageDescription</key> 
+<string>App需要您的同意,才能使用语音识别</string>
 </code>
